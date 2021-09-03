@@ -1,0 +1,16 @@
+{
+	"name": "calendar",
+	"fullName": "Calendar importer",
+	"author": "Elanis",
+	"version": "1.0.0",
+	"dependencies": {},
+	"desktop": {
+		"module": false,
+		"window": false
+	},
+	"mobile": {
+		"module": false,
+		"window": false
+	},
+	"server": true
+}
