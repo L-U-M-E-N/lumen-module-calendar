@@ -3,6 +3,12 @@ const fs = require('fs');
 
 module.exports = class Calendar {
 	static init() {
+		Calendar.update();
+
+		Calendar.interval = setInterval(Calendar.update, 60 * 60 * 1000); // Update every hour
+	}
+
+	static update() {
 		for(const calendarName in calendars) {
 			Calendar.syncCalendar(
 				calendarName,
