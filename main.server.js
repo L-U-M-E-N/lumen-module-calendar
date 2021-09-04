@@ -36,7 +36,7 @@ module.exports = class Calendar {
 		const minDate = new Date();
 		minDate.setDate(minDate.getDate() - 1);
 
-		ical.fromURL(calendarData.url, {}, function (err, data) {
+		ical.fromURL(calendarData.url, {}, async function (err, data) {
 			for (const k in data) {
 				if (data.hasOwnProperty(k)) {
 					const ev = data[k];
@@ -63,16 +63,20 @@ module.exports = class Calendar {
 						if(!!calendarData.start && field.start < calendarData.start) { continue; }
 						if(!!calendarData.end && field.end > calendarData.end) { continue; }
 
-						const [query, values] = Database.buildInsertQuery('calendar', field);
+						if((await Database.execQuery('SELECT id FROM calendar WHERE id = $1', [field.id])).rows.length === 0) {
+							const [query, values] = Database.buildInsertQuery('calendar', field);
 
-						Database.execQuery(
-							query,
-							values,
-							ev
-						);
+							Database.execQuery(
+								query,
+								values,
+								ev
+							);
+						}
 					}
 				}
 			}
+
+			log(`Imported calendar "${calendarData.url}"`, 'info');
 		});
 	}
 };
