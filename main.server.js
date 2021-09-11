@@ -33,6 +33,9 @@ module.exports = class Calendar {
 	}
 
 	static syncCalendar(origin, calendarData) {
+		const minDate = new Date();
+		minDate.setDate(minDate.getDate() - 1);
+
 		ical.fromURL(calendarData.url, {}, function (err, data) {
 			for (const k in data) {
 				if (data.hasOwnProperty(k)) {
@@ -50,6 +53,10 @@ module.exports = class Calendar {
 							end: new Date(ev.end),
 							origin
 						};
+
+						if(field.start.getTime() > minDate.getTime()) {
+							continue;
+						}
 
 						field = Calendar.fixErrors(field, ev);
 
