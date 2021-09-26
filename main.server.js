@@ -33,8 +33,8 @@ module.exports = class Calendar {
 	}
 
 	static syncCalendar(origin, calendarData) {
-		const minDate = new Date();
-		minDate.setDate(minDate.getDate() - 1);
+		const maxDate = new Date();
+		maxDate.setDate(maxDate.getDate() - 1);
 
 		ical.fromURL(calendarData.url, {}, async function (err, data) {
 			for (const k in data) {
@@ -54,7 +54,7 @@ module.exports = class Calendar {
 							origin
 						};
 
-						if(field.start.getTime() > minDate.getTime()) {
+						if(field.start.getTime() > maxDate.getTime()) {
 							continue;
 						}
 
