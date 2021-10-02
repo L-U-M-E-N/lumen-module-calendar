@@ -1,7 +1,7 @@
-const ical = require('ical');
-const fs = require('fs');
+import ical from 'ical';
+import fs from 'fs';
 
-module.exports = class Calendar {
+export default class Calendar {
 	static init() {
 		Calendar.update();
 
