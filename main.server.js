@@ -63,7 +63,8 @@ export default class Calendar {
 						if(!!calendarData.start && field.start < calendarData.start) { continue; }
 						if(!!calendarData.end && field.end > calendarData.end) { continue; }
 
-						if((await Database.execQuery('SELECT id FROM calendar WHERE id = $1', [field.id])).rows.length === 0) {
+						const res = (await Database.execQuery('SELECT id FROM calendar WHERE id = $1', [field.id]));
+						if(!res || !res.rows || res.rows.length === 0) {
 							const [query, values] = Database.buildInsertQuery('calendar', field);
 
 							Database.execQuery(
@@ -79,4 +80,4 @@ export default class Calendar {
 			log(`Imported calendar "${calendarData.url}"`, 'info');
 		});
 	}
-};
+}
