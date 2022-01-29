@@ -1,3 +1,4 @@
+import fetch from 'node-fetch';
 import ical from 'ical';
 import fs from 'fs';
 
@@ -32,52 +33,59 @@ export default class Calendar {
 		return field;
 	}
 
-	static syncCalendar(origin, calendarData) {
+	static async insertEvent(origin, maxDate, calendarData, event) {
+		if (event.type === 'VEVENT') {
+			// TODO: update if lastmodified > last calendar sync
+
+			let field = {
+				id: event.uid,
+				title: event.summary,
+				description: event.description,
+				start: new Date(event.start),
+				end: new Date(event.end),
+				origin
+			};
+
+			if(field.start.getTime() > maxDate.getTime()) {
+				return;
+			}
+
+			field = Calendar.fixErrors(field, event);
+
+			if(!!calendarData.start && field.start < calendarData.start) {
+				return;
+			}
+			if(!!calendarData.end && field.end > calendarData.end) {
+				return;
+			}
+
+			const res = (await Database.execQuery('SELECT id FROM calendar WHERE id = $1', [field.id]));
+			if(!res || !res.rows || res.rows.length === 0) {
+				const [query, values] = Database.buildInsertQuery('calendar', field);
+
+				Database.execQuery(
+					query,
+					values
+				);
+			}
+		}
+	}
+
+	static async syncCalendar(origin, calendarData) {
 		const maxDate = new Date();
 		maxDate.setDate(maxDate.getDate() - 1);
 
-		ical.fromURL(calendarData.url, {}, async function (err, data) {
-			for (const k in data) {
-				if (data.hasOwnProperty(k)) {
-					const ev = data[k];
-					if (data[k].type === 'VEVENT') {
-						//console.log(ev);
+		const response = await fetch(calendarData.url);
+		const responseBody = await response.text();
 
-						// TODO: update if lastmodified > last calendar sync
+		const data = ical.parseICS(responseBody);
 
-						let field = {
-							id: ev.uid,
-							title: ev.summary,
-							description: ev.description,
-							start: new Date(ev.start),
-							end: new Date(ev.end),
-							origin
-						};
-
-						if(field.start.getTime() > maxDate.getTime()) {
-							continue;
-						}
-
-						field = Calendar.fixErrors(field, ev);
-
-						if(!!calendarData.start && field.start < calendarData.start) { continue; }
-						if(!!calendarData.end && field.end > calendarData.end) { continue; }
-
-						const res = (await Database.execQuery('SELECT id FROM calendar WHERE id = $1', [field.id]));
-						if(!res || !res.rows || res.rows.length === 0) {
-							const [query, values] = Database.buildInsertQuery('calendar', field);
-
-							Database.execQuery(
-								query,
-								values,
-								ev
-							);
-						}
-					}
-				}
+		for (const k in data) {
+			if (data.hasOwnProperty(k)) {
+				Calendar.insertEvent(origin, maxDate, calendarData, data[k]);
 			}
+		}
 
-			log(`Imported calendar "${calendarData.url}"`, 'info');
-		});
+		log(`Imported calendar "${calendarData.url}"`, 'info');
 	}
 }
