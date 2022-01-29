@@ -10,10 +10,10 @@ export default class Calendar {
 	}
 
 	static update() {
-		for(const calendarName in calendars) {
+		for(const calendarName in global.config.calendar.calendars) {
 			Calendar.syncCalendar(
 				calendarName,
-				calendars[calendarName]
+				global.config.calendar.calendars[calendarName]
 			);
 		}
 	}
@@ -74,6 +74,9 @@ export default class Calendar {
 	static async syncCalendar(origin, calendarData) {
 		const maxDate = new Date();
 		maxDate.setDate(maxDate.getDate() - 1);
+
+		calendarData.start = calendarData.start && new Date(calendarData.start);
+		calendarData.end = calendarData.end && new Date(calendarData.end);
 
 		const response = await fetch(calendarData.url);
 		const responseBody = await response.text();
