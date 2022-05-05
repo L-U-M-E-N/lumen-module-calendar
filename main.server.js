@@ -10,10 +10,10 @@ export default class Calendar {
 	}
 
 	static update() {
-		for(const calendarName in global.config.calendar.calendars) {
+		for(const calendarName in config.calendars) {
 			Calendar.syncCalendar(
 				calendarName,
-				global.config.calendar.calendars[calendarName]
+				config.calendars[calendarName]
 			);
 		}
 	}
