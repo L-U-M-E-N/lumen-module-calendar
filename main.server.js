@@ -1,4 +1,3 @@
-import fetch from 'node-fetch';
 import ical from 'ical';
 import fs from 'fs';
 
@@ -6,7 +5,7 @@ export default class Calendar {
 	static init() {
 		Calendar.update();
 
-		Calendar.interval = setInterval(Calendar.update, 60 * 60 * 1000); // Update every hour
+		Calendar.interval = setInterval(Calendar.update, 3 * 60 * 60 * 1000); // Update every 3 hour
 	}
 
 	static update() {

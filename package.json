@@ -1,7 +1,6 @@
 {
   "type": "module",
   "dependencies": {
-    "ical": "^0.8.0",
-    "node-fetch": "^3.2.10"
+    "ical": "^0.8.0"
   }
 }
