@@ -40,21 +40,21 @@ export default class Calendar {
 				id: event.uid,
 				title: event.summary,
 				description: event.description,
-				start: new Date(event.start),
-				end: new Date(event.end),
+				start: event.start.toISOString(),
+				end: (typeof event.end !== 'undefined') ? event.end.toISOString() : undefined,
 				origin
 			};
 
-			if(field.start.getTime() > maxDate.getTime()) {
+			if((new Date(field.start)).getTime() > maxDate.getTime()) {
 				return;
 			}
 
 			field = Calendar.fixErrors(field, event);
 
-			if(!!calendarData.start && field.start < calendarData.start) {
+			if(!!calendarData.start && (new Date(field.start)).getTime() < calendarData.start.getTime()) {
 				return;
 			}
-			if(!!calendarData.end && field.end > calendarData.end) {
+			if(!!calendarData.end && (new Date(field.end)).getTime() > calendarData.end.getTime()) {
 				return;
 			}
 
