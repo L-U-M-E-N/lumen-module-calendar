@@ -1,6 +1,6 @@
 {
   "type": "module",
   "dependencies": {
-    "ical": "^0.8.0"
+    "node-ical": "^0.16.0"
   }
 }

@@ -1,4 +1,4 @@
-import ical from 'ical';
+import ical from 'node-ical';
 import fs from 'fs';
 
 export default class Calendar {
@@ -24,7 +24,7 @@ export default class Calendar {
 			field.end.setMinutes(field.end.getMinutes() + 1);
 		}
 
-		// No null description
+		// No null/undefined description
 		if(typeof field.description !== 'string') {
 			field.description = '';
 		}
