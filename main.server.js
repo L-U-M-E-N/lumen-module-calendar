@@ -71,23 +71,27 @@ export default class Calendar {
 	}
 
 	static async syncCalendar(origin, calendarData) {
-		const maxDate = new Date();
-		maxDate.setDate(maxDate.getDate() - 1);
+		try {
+			const maxDate = new Date();
+			maxDate.setDate(maxDate.getDate() - 1);
 
-		calendarData.start = calendarData.start && new Date(calendarData.start);
-		calendarData.end = calendarData.end && new Date(calendarData.end);
+			calendarData.start = calendarData.start && new Date(calendarData.start);
+			calendarData.end = calendarData.end && new Date(calendarData.end);
 
-		const response = await fetch(calendarData.url);
-		const responseBody = await response.text();
+			const response = await fetch(calendarData.url);
+			const responseBody = await response.text();
 
-		const data = ical.parseICS(responseBody);
+			const data = ical.parseICS(responseBody);
 
-		for (const k in data) {
-			if (data.hasOwnProperty(k)) {
-				Calendar.insertEvent(origin, maxDate, calendarData, data[k]);
+			for (const k in data) {
+				if (data.hasOwnProperty(k)) {
+					Calendar.insertEvent(origin, maxDate, calendarData, data[k]);
+				}
 			}
-		}
 
-		log(`Imported calendar "${calendarData.url}"`, 'info');
+			log(`Imported calendar "${calendarData.url}"`, 'info');
+		} catch(e) {
+			console.error(e);
+		}
 	}
 }
